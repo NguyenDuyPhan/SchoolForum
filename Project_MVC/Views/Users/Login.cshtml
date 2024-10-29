@@ -1,0 +1,116 @@
+﻿@{
+    Layout = null;  // Không sử dụng layout
+    ViewData["Title"] = "Login Page";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f8f9fa; /* Bạn có thể điều chỉnh màu nền nếu cần */
+        }
+    </style>
+</head>
+<body>
+    <div class="card p-4 shadow" style="width: 100%; max-width: 400px;">
+        <h2 class="text-center mb-4">Login</h2>
+        <form asp-action="Login" method="post" id="loginForm">
+            <div class="mb-3">
+                <label for="loginUsername" class="form-label">Username</label>
+                <input type="text" class="form-control" id="loginUsername" name="username" placeholder="Enter your username" required>
+            </div>
+            <div class="mb-3">
+                <label for="loginPassword" class="form-label">Password</label>
+                <input type="password" class="form-control" id="loginPassword" name="password" placeholder="Enter your password" required>
+            </div>
+            
+        </form>
+        <div id="errorMessage" class="alert alert-danger d-none" role="alert"></div>
+
+        <button id="btnLogin" class="btn btn-primary w-100">Login</button>
+        <div class="text-center mt-3">
+            <p>Don't have an account? <a asp-action="Register">Register here</a></p>
+        </div>
+        <div class="text-center mt-3">
+            <p>Back to home <a asp-controller="Home" asp-action="Index">Back</a></p>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        var urlUser = 'https://localhost:5000/api/User';
+        $('#loginUsername, #loginPassword').on('input', function () {
+            $('#errorMessage').addClass('d-none');
+        });
+
+        $('#loginPassword').on('keypress', function (e) {
+            if (e.which === 13) { // 13 là mã ASCII cho phím Enter
+                
+                performLogin();
+            }
+        });
+
+        $(document).ready(() => {
+            $('#btnLogin').on('click', function () {
+                performLogin();
+            });
+        });
+        
+        function performLogin() {
+            if (!validation()) {
+                return;
+            }
+            var username = $('#loginUsername').val();
+            var password = $('#loginPassword').val();
+            var tbodyHtml = '';
+            $.ajax({
+                async: false,
+                type: "POST",
+                url: urlUser + '/Login?username=' + username + '&password=' + password,
+                contentType: "application/json",
+                success: function (receivedData) {
+                    console.log(receivedData);
+                    localStorage.setItem('authToken', JSON.stringify(receivedData));
+                    localStorage.setItem('username', receivedData.username);
+                    localStorage.setItem('avatarUrl', receivedData.avatar);
+                    window.location.href = '/Home';
+
+                },
+                error: function (xhr, status, err) {
+
+                    console.log(xhr);
+                    console.log(err);
+                    if (xhr.status === 404) {
+                        $('#errorMessage').text('User does not exist').removeClass('d-none');
+                    }
+                    if (xhr.status === 400) {
+                        $('#errorMessage').text('Wrong password').removeClass('d-none');
+                    }
+                }
+            });
+        }
+       
+
+        function validation() {
+            if ($('#loginUsername').val().trim() === '') {
+                return false;
+            }
+            if ($('#loginPassword').val().trim() === '') {
+                return false;
+            }
+            return true;
+        }
+
+    </script>
+</body>
+</html>

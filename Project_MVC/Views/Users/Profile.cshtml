@@ -1,0 +1,238 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = null;  // Không sử dụng layout
+    ViewData["Title"] = "Profile Page";
+    
+}
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f8f9fa; /* Màu nền */
+        }
+
+        .personal-image {
+            text-align: center;
+        }
+
+            .personal-image input[type="file"] {
+                display: none;
+            }
+
+        .personal-figure {
+            position: relative;
+            width: 200px;
+            height: 200px;
+        }
+
+        .personal-avatar {
+            cursor: pointer;
+            width: 200px;
+            height: 200px;
+            box-sizing: border-box;
+            border-radius: 100%;
+            border: 2px solid transparent;
+            box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.2);
+            transition: all ease-in-out .3s;
+        }
+
+            .personal-avatar:hover {
+                box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.5);
+            }
+
+        .personal-figcaption {
+            cursor: pointer;
+            position: absolute;
+            top: 0px;
+            width: inherit;
+            height: inherit;
+            border-radius: 100%;
+            opacity: 0;
+            background-color: rgba(0, 0, 0, 0);
+            transition: all ease-in-out .3s;
+        }
+
+            .personal-figcaption:hover {
+                opacity: 1;
+                background-color: rgba(0, 0, 0, .5);
+            }
+
+            .personal-figcaption > img {
+                margin-top: 58px;
+                width: 60px;
+                height: 60px;
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="mt-4">Edit Profile</h2>
+        <div class="col-md-3 border-right">
+            <div class="personal-image" id="personal-image">
+                <label class="label" for="avatarInput">
+                    <input id="avatarInput" type="file" accept="image/*" onchange="previewAvatar()" style="display: none;" />
+                    <figure class="personal-figure">
+                        <img id="avatar" src="" class="personal-avatar" alt="avatar">
+                        <figcaption class="personal-figcaption">
+                            <img src="https://raw.githubusercontent.com/ThiagoLuizNunes/angular-boilerplate/master/src/assets/imgs/camera-white.png">
+                        </figcaption>
+                    </figure>
+                </label>
+            </div>
+            
+        </div>
+        <div id="updateMessage" class="alert alert-success d-none" role="alert">
+            Profile updated successfully!
+        </div>
+        <div id="errorMessage" class="alert alert-danger d-none" role="alert">
+            An error occurred while updating the profile.
+        </div>
+        <form asp-action="EditProfile" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="username" name="username" readonly required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Gender</label>
+                <div>
+                    <input type="radio" id="male" name="gender" value="1">
+                    <label for="male">Male</label>
+
+                    <input type="radio" id="female" name="gender" value="0" class="ms-3">
+                    <label for="female">Female</label>                   
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="password" class="form-label">New Password</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Enter new password">
+                <small class="form-text text-muted">Leave blank if you don't want to change the password.</small>
+            </div>
+            
+        </form>
+        <button id="btnSaveChange" class="btn btn-primary">Save Changes</button>
+        <div class="text-center mt-3">
+            <a href="/Home" class="btn btn-secondary">Back to Home</a> <!-- Lối thoát về trang Home -->
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function previewAvatar() {
+            $('#personal-image').remove(".form-submit-avatar");
+
+            var myFile = $('#avatarInput').prop('files');
+            if (myFile.length > 0) {
+                $('#avatar').attr('src', URL.createObjectURL(myFile[0]));
+            }
+      
+        }
+
+        $(document).ready(function () {
+            const authToken = localStorage.getItem('authToken');
+            const userData = JSON.parse(authToken);
+            
+            $('#username').val(userData.username || "");
+            $('#email').val(userData.email || "");
+            
+            if (userData.gender) {
+                $('input[name="gender"][value="1"]').prop('checked', true);
+    
+            } else {
+                $('input[name="gender"][value="0"]').prop('checked', true);
+            }
+            // Set avatar image from local storage
+            const avatarUrl = localStorage.getItem('avatarUrl');
+            if (avatarUrl) {
+                $('#avatar').attr('src', avatarUrl);
+            }
+            
+        });
+        $(document).ready(() => {
+            $('#btnSaveChange').on('click', function () {
+                SaveChange();
+            });
+        });
+
+        function SaveChange() {
+            var formData = new FormData();
+            formData.append('username', $('#username').val());
+            formData.append('email', $('#email').val());
+            formData.append('gender', $('input[name="gender"]:checked').val() == '1' ? true : false);
+            formData.append('password', $('#password').val());
+
+            const file = $('#avatarInput')[0].files[0];
+            if (file) {
+                formData.append('avatar', file);
+                console.log("File added to FormData:", file.name);
+            } else {
+                console.log("No file added to FormData");
+            }
+
+            // Kiểm tra nội dung FormData
+            formData.forEach((value, key) => {
+                console.log(key + ':', value);
+            });
+
+            // Thêm file ảnh (nếu có)
+            if ($('#avatarInput')[0].files.length > 0) {
+                formData.append('avatar', $('#avatarInput')[0].files[0]);
+            }
+            $.ajax({
+                async: false,
+                type: "PUT",
+                url: 'https://localhost:5000/api/User/UpdateUser',
+                data: formData,
+                processData: false, // không xử lý dữ liệu
+                contentType: false, // không gửi content type mặc định
+                success: function (receivedData) {
+                    // remove localStorage
+                    console.log(receivedData);
+                    $('#updateMessage').removeClass('d-none');
+                    $('#updateMessage').fadeIn().delay(3000).fadeOut();
+                    localStorage.removeItem('authToken');
+                    localStorage.removeItem('username');
+                    localStorage.removeItem('avatarUrl');
+                    // upload again
+                    localStorage.setItem('authToken', JSON.stringify(receivedData));
+                    localStorage.setItem('username', receivedData.username);
+                    localStorage.setItem('avatarUrl', receivedData.avatar);
+                    // Cập nhật URL ảnh mới nếu có
+                    if (receivedData.avatarUrl) {
+                        $('#avatar').attr('src', receivedData.avatarUrl);
+                        localStorage.setItem('avatarUrl', receivedData.avatarUrl);
+                    }
+                },
+                error: function (xhr, status, err) {
+                    console.error(xhr.responseText);
+                    $('#errorMessage').removeClass('d-none');
+                    $('#errorMessage').fadeIn().delay(3000).fadeOut();
+                }
+            });
+        }
+
+
+
+        
+    </script>
+</body>
+</html>
