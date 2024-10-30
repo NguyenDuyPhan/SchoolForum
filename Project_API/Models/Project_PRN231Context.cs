@@ -27,11 +27,8 @@ namespace Project_API.Models
         {
             if (!optionsBuilder.IsConfigured)
             {
-                var conf = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .Build();
-
-                optionsBuilder.UseSqlServer(conf.GetConnectionString("DefaultConnection"));
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+                optionsBuilder.UseSqlServer("Data Source=localhost,1433;Initial Catalog=Project_PRN231;User ID=sa;Password=123");
             }
         }
 
@@ -52,12 +49,12 @@ namespace Project_API.Models
                 entity.HasOne(d => d.ParentAnswerNavigation)
                     .WithMany(p => p.InverseParentAnswerNavigation)
                     .HasForeignKey(d => d.ParentAnswer)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Answers_Answers");
 
                 entity.HasOne(d => d.Question)
                     .WithMany(p => p.Answers)
                     .HasForeignKey(d => d.QuestionId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Answers_Questions");
 
                 entity.HasOne(d => d.User)
@@ -72,8 +69,6 @@ namespace Project_API.Models
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");
-
-                
 
                 entity.Property(e => e.Title).HasMaxLength(50);
 

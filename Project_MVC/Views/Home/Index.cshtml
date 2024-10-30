@@ -10,6 +10,57 @@
     <title>Blog Filter</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.1/font/bootstrap-icons.css">
+    <style>
+        /* CSS để căn giữa nội dung trong nút */
+        .btn-success {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px; /* Chiều rộng của nút */
+            height: 40px; /* Chiều cao của nút */
+            border-radius: 50%; /* Biến nút thành hình tròn */
+        }
+
+        .btn-edit {
+            color: #fff;
+            background-color: #007bff; /* Màu xanh dương cho nút Edit */
+            border-color: #007bff;
+        }
+
+            .btn-edit:hover {
+                background-color: #0056b3;
+                border-color: #0056b3;
+            }
+
+        /* Định dạng nút xóa */
+        .btn-delete {
+            color: #fff;
+            background-color: #dc3545; /* Màu đỏ cho nút Delete */
+            border-color: #dc3545;
+        }
+
+            .btn-delete:hover {
+                background-color: #c82333;
+                border-color: #bd2130;
+            }
+
+            /* Định dạng icon và padding cho nút */
+            .btn-edit i, .btn-delete i {
+                margin-right: 5px; /* Khoảng cách giữa biểu tượng và văn bản */
+            }
+
+        #editQuestionModal .modal-title {
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        #editQuestionModal .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-4">
@@ -29,15 +80,15 @@
                         <div class="mb-3">
                             <label class="form-label">Created Time:</label>
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="1day" name="dateFilter" value="1day">
+                                <input type="checkbox" class="form-check-input" id="1day" name="dateFilter" value="1">
                                 <label class="form-check-label" for="1day">Last 1 day</label>
                             </div>
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="1week" name="dateFilter" value="1week">
+                                <input type="checkbox" class="form-check-input" id="1week" name="dateFilter" value="7">
                                 <label class="form-check-label" for="1week">Last 1 week</label>
                             </div>
                             <div class="form-check">
-                                <input type="checkbox" class="form-check-input" id="1month" name="dateFilter" value="1month">
+                                <input type="checkbox" class="form-check-input" id="1month" name="dateFilter" value="30">
                                 <label class="form-check-label" for="1month">Last 1 month</label>
                             </div>
                         </div>
@@ -50,46 +101,30 @@
                                 <option value="oldest">Oldest</option>
                             </select>
                         </div>
-
-                        <!-- Nút áp dụng filter -->
-                        <button type="submit" class="btn btn-primary w-100">Apply Filter</button>
                     </form>
+                    <button id="applyFilter" type="submit" class="btn btn-primary w-100">Apply Filter</button>
                 </div>
             </div>
 
             <!-- Danh sách blog bên phải - chiếm 9 cột -->
             <div class="col-md-9">
+                <div class="d-flex justify-content-between mb-3">
+                    <h2>Blogs</h2>
+                    <button id="addQuestion" class="btn btn-success" title="Create Question">
+                        <i class="bi bi-plus-circle"></i> <!-- Biểu tượng thêm -->
+                    </button>
+                </div>
                 <div class="row g-3" id="blogList">
                     <!-- Blog 1 -->
                     <div class="col-12">
                         <div class="card p-3">
-                            <h2 class="card-title">Blog Title 1</h2>
+                            <a asp-controller="Questions" asp-action="QuestionDetail" asp-route-id="5">
+                                <h2 class="card-title">Blog Title 1</h2>
+                            </a>
                             <p class="card-text">By John Doe</p>
                             <p class="card-text">This is the content of the first blog post...</p>
                             <p class="card-text text-muted">Created 2 days ago</p>
                             <p class="card-text">Comments: 5</p>
-                        </div>
-                    </div>
-
-                    <!-- Blog 2 -->
-                    <div class="col-12">
-                        <div class="card p-3">
-                            <h2 class="card-title">Blog Title 2</h2>
-                            <p class="card-text">By Jane Smith</p>
-                            <p class="card-text">Another blog post with different content...</p>
-                            <p class="card-text text-muted">Created 1 week ago</p>
-                            <p class="card-text">Comments: 8</p>
-                        </div>
-                    </div>
-
-                    <!-- Blog 3 -->
-                    <div class="col-12">
-                        <div class="card p-3">
-                            <h2 class="card-title">Blog Title 3</h2>
-                            <p class="card-text">By Alex Johnson</p>
-                            <p class="card-text">A third blog post with valuable insights...</p>
-                            <p class="card-text text-muted">Created 1 month ago</p>
-                            <p class="card-text">Comments: 12</p>
                         </div>
                     </div>
                 </div>
@@ -97,7 +132,260 @@
         </div>
     </div>
 
+    <!-- Modal Tạo Câu Hỏi -->
+    <div class="modal fade" id="createQuestionModal" tabindex="-1" aria-labelledby="createQuestionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createQuestionModalLabel">Create Question</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createQuestionForm">
+                        <div class="mb-3">
+                            <label for="questionTitle" class="form-label">Title:</label>
+                            <input type="text" id="questionTitle" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="questionContent" class="form-label">Content:</label>
+                            <textarea id="questionContent" class="form-control" rows="4" required></textarea>
+                        </div>
+                        <!-- Thêm trường Status -->
+                        <div class="mb-3">
+                            <label for="questionStatus" class="form-label">Status:</label>
+                            <select id="questionStatus" class="form-control" required>
+                                <option value="Enable">Enable</option>
+                                <option value="Disable">Disable</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnSaveQuestion">Save Question</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Edit Câu Hỏi -->
+    <div class="modal fade" id="editQuestionModal" tabindex="-1" aria-labelledby="editQuestionModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editQuestionModalLabel">Edit Question</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editQuestionForm">
+                        <div class="mb-3">
+                            <label for="editQuestionTitle" class="form-label">Title:</label>
+                            <input type="text" id="editQuestionTitle" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editQuestionContent" class="form-label">Content:</label>
+                            <textarea id="editQuestionContent" class="form-control" rows="4" required></textarea>
+                        </div>
+                        <!-- Thêm trường Status -->
+                        <div class="mb-3">
+                            <label for="editQuestionStatus" class="form-label">Status:</label>
+                            <select id="editQuestionStatus" class="form-control" required>
+                                <option value="Enable">Enable</option>
+                                <option value="Disable">Disable</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="btnUpdateQuestion">Update Question</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const authToken = localStorage.getItem('authToken');
+        let user = JSON.parse(authToken);
+        $(document).ready(() => {
+            loadQuestion();
+            $('#applyFilter').on('click', loadQuestion);
+            const authToken = localStorage.getItem('authToken');
+            if (!authToken) {
+                $('#addQuestion').hide();
+            }
+
+            // Mở modal khi nhấn nút "Add"
+            $('#addQuestion').on('click', () => {
+                $('#createQuestionModal').modal('show');
+            });
+            
+            // Lưu câu hỏi khi nhấn nút "Save Question"
+            $('#btnSaveQuestion').on('click', () => {
+                
+                const title = $('#questionTitle').val();
+                const content = $('#questionContent').val();
+                const questionStatus = $('#questionStatus').val() === "Enable";
+                // Gửi dữ liệu đến API (thay đổi URL theo đúng API của bạn)
+                $.ajax({
+                    url: 'https://localhost:5000/api/Question', // Địa chỉ API của bạn
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({
+                        title: title,
+                        content: content,
+                        userId: user.userId,
+                        status: questionStatus
+                    }),
+                    success: function (response) {
+                        console.log('Question saved:', response);
+                        $('#createQuestionModal').modal('hide');
+                        loadQuestion(); // Tải lại danh sách câu hỏi
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                        alert('An error occurred while saving the question.');
+                    }
+                });
+            });
+        });
+        function deleteQuestion(questionId) {
+            if (confirm("Are you sure you want to delete this question? This action cannot be undone.")) {
+                $.ajax({
+                    url: `https://localhost:5000/api/Question/${questionId}`, // Địa chỉ API xóa câu hỏi
+                    method: 'DELETE',
+                    success: function (response) {
+                        console.log('Question deleted:', response);
+                        loadQuestion(); // Tải lại danh sách câu hỏi sau khi xóa thành công
+                    },
+                    error: function (xhr, status, error) {
+                        console.error('Error:', error);
+                        alert('An error occurred while deleting the question.');
+                    }
+                });
+            }
+        }
+        function updateQuestion(questionId){
+            $.ajax({
+                url: `https://localhost:5000/api/Question/${questionId}`,
+                method: 'GET',
+                success: function (question) {
+                    // Đặt giá trị cho các trường trong modal
+                    $('#editQuestionTitle').val(question.title);
+                    $('#editQuestionContent').val(question.content);
+                    $('#editQuestionStatus').val(question.status === true ? "Enable" : "Disable");
+                    $('#editQuestionModal').data('questionId', questionId).modal('show');
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while fetching the question details.');
+                }
+            });
+        }
+        $('#btnUpdateQuestion').on('click', () => {
+            const questionId = $('#editQuestionModal').data('questionId');
+            const updatedTitle = $('#editQuestionTitle').val();
+            const updatedContent = $('#editQuestionContent').val();
+            const updatedQuestionStatus = $('#editQuestionStatus').val() === "Enable";
+            $.ajax({
+                url: `https://localhost:5000/api/Question/${questionId}`,
+                method: 'PUT',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    title: updatedTitle,
+                    content: updatedContent,
+                    status: updatedQuestionStatus
+                }),
+                success: function (response) {
+                    console.log('Question updated:', response);
+                    $('#editQuestionModal').modal('hide');
+                    loadQuestion(); // Tải lại danh sách câu hỏi
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while updating the question.');
+                }
+            });
+        });
+        function loadQuestion() {
+            const keyword = $('#keyword').val();
+            const sort = $('#sort').val();
+            const createdTime = [];
+            $('input[name="dateFilter"]:checked').each(function () {
+                createdTime.push(parseInt($(this).val()));
+            });
+            console.log(createdTime);
+            $.ajax({
+                url: 'https://localhost:5000/api/Question',
+                method: 'GET',
+                data: {
+                    questionContent: keyword,
+                    sort: sort,
+                    createdTime: createdTime.toString()
+                },
+                success: function (data) {
+                    console.log(data);
+                    $('#blogList').empty();
+                    var html = '';
+                    data.forEach(question => {
+                        html += `
+                                    <div class="col-12">
+                                        <div class="card p-3">
+                                                            <a href="/Questions/QuestionDetail/${question.questionId}"  class="question-link">
+                                                <h2 class="card-title">${question.title}</h2>
+                                            </a>
+                                            <div class="d-flex align-items-center mb-2">
+            <img src="${question.avatar}" alt="Author Avatar" class="rounded-circle me-2" style="width: 40px; height: 40px;">
+            <p class="card-text mb-0">By ${question.author}</p>
+        </div>
+                                            <p class="card-text">${question.content}</p>
+                                            <p class="card-text text-muted">${question.createdDate}</p>
+                                            <p class="card-text">Answers: ${question.totalAnswer}</p>
+                                                    
+                                        
+
+                                    
+                                `;
+                        
+                        if (authToken) {
+                            if (user.userId == question.userId) {
+                                html += `<div class="mt-2">
+                                            <button class="btn btn-warning btn-edit" onclick="updateQuestion(${question.questionId})"">
+                                                    <i class="bi bi-pencil-square"></i> Edit
+                                            </button>
+                                                    <button onclick="deleteQuestion(${question.questionId})" class="btn  btn-delete" >
+                                                            <i class="bi bi-trash"></i> Delete
+                                                    </button>
+                                                            </div>
+                                            </div>
+                                        </div>
+                                `;
+                            } else {
+                                html += `</div></div>`;
+                            }
+                        }
+                        else {
+                            html += `</div></div>`;
+                        }
+                        $('#blogList').html(html);
+                    });
+
+                    $('.question-link').on('click', function (e) {
+                        e.preventDefault();
+                        const questionId = $(this).attr('href').split('/').pop(); 
+
+                        window.location.href = `/Questions/QuestionDetail/${questionId}`;
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while loading questions.');
+                }
+            });
+        }
+    </script>
 </body>
 </html>

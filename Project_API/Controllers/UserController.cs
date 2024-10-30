@@ -48,8 +48,8 @@ namespace Project_API.Controllers
             }
             else
             {
-                user = _context.Users.FirstOrDefault(u => u.Password == password);
-                if (user == null)
+                
+                if (user.Password != password)
                 {
                     return BadRequest("Wrong password!");
                 }
@@ -69,6 +69,8 @@ namespace Project_API.Controllers
                     if (userDb == null)
                     {
                         user.RoleId = 2;
+                        user.Avatar = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQgI3iX7tf1HiAnbVKSpyns2b0moiUKSJE2uQ&s";
+                        
                         _context.Users.Add(user);
                         _context.SaveChanges();
                         return Ok(user);

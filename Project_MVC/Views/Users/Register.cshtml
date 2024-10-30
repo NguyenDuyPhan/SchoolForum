@@ -27,6 +27,18 @@
                     <input type="email" class="form-control" id="registerEmail" placeholder="Enter your email" required>
                 </div>
                 <div class="mb-3">
+                    <label class="form-label">Gender</label>
+                    <div>
+                        <input type="radio" id="genderMale" name="gender" value="Male" required>
+                        <label for="genderMale" class="form-label me-3">Male</label>
+
+                        <input type="radio" id="genderFemale" name="gender" value="Female" required>
+                        <label for="genderFemale" class="form-label me-3">Female</label>
+
+                        
+                    </div>
+                </div>
+                <div class="mb-3">
                     <label for="registerPassword" class="form-label">Password</label>
                     <input type="password" class="form-control" id="registerPassword" placeholder="Create a password" required>
                 </div>
@@ -74,7 +86,8 @@
             var sendingdata = {
                 username: $('#registerUsername').val(),
                 password: $('#registerPassword').val(),
-                email: $('#registerEmail').val()
+                email: $('#registerEmail').val(),
+                gender: $('input[name="gender"]:checked').val() === 'Male' ? true : false
             };
             $.ajax({
                 async: false,
@@ -85,8 +98,9 @@
                 success: function (receivedData) {
                     alert('Register success!');
                     console.log(receivedData);
-                    localStorage.setItem('authToken', receivedData);
+                    localStorage.setItem('authToken', JSON.stringify(receivedData));
                     localStorage.setItem('username', receivedData.username);
+                    localStorage.setItem('avatarUrl', receivedData.avatar);
                     window.location.href = '/Home';
 
                 },
@@ -121,6 +135,10 @@
             }
             if ($('#registerPassword').val() != $('#confirmPassword').val().trim()) {
                 $('#errorMessage').text('Password and Confirm Password must equal').removeClass('d-none');
+                return false;
+            }
+            if (!$('input[name="gender"]:checked').val()) { // Kiểm tra xem có chọn giới tính không
+                $('#errorMessage').text('Please select a gender').removeClass('d-none');
                 return false;
             }
             return true;

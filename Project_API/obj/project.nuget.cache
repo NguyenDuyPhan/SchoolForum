@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "+8WvTir7UfEfNz4nRQX9k8QKRTkbos8OUZGbQn6e2lkqCMTJiP7/ynbqWHLGkTz5LPa2N6wqAr0oQF6GT4+BIQ==",
+  "dgSpecHash": "IcaLSkL4/G9hlaix8PaSuoFxBjjQxTHJXV/v7i4BBVRJ1RgBlEFiGfbFism/LnfEJxlHAVVHEmUKyNrrv21hXw==",
   "success": true,
-  "projectFilePath": "C:\\Users\\ADMIN\\Desktop\\EXE_Craftera\\Craftera\\Project_PRN231\\Project_API\\Project_API.csproj",
+  "projectFilePath": "C:\\Users\\ADMIN\\Desktop\\x\\SchoolForum\\Project_API\\Project_API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ADMIN\\.nuget\\packages\\cloudinarydotnet\\1.26.2\\cloudinarydotnet.1.26.2.nupkg.sha512",
     "C:\\Users\\ADMIN\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",

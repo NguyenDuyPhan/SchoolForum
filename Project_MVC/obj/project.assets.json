@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\ADMIN\\Desktop\\EXE_Craftera\\Craftera\\Project_PRN231\\Project_MVC\\Project_MVC.csproj",
+      "projectUniqueName": "C:\\Users\\ADMIN\\Desktop\\x\\SchoolForum\\Project_MVC\\Project_MVC.csproj",
       "projectName": "Project_MVC",
-      "projectPath": "C:\\Users\\ADMIN\\Desktop\\EXE_Craftera\\Craftera\\Project_PRN231\\Project_MVC\\Project_MVC.csproj",
+      "projectPath": "C:\\Users\\ADMIN\\Desktop\\x\\SchoolForum\\Project_MVC\\Project_MVC.csproj",
       "packagesPath": "C:\\Users\\ADMIN\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\ADMIN\\Desktop\\EXE_Craftera\\Craftera\\Project_PRN231\\Project_MVC\\obj\\",
+      "outputPath": "C:\\Users\\ADMIN\\Desktop\\x\\SchoolForum\\Project_MVC\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\ADMIN\\AppData\\Roaming\\NuGet\\NuGet.Config",
